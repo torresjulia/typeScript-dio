@@ -1,10 +1,9 @@
-var apiKey = '3f301be7381a03ad8d352314dcc3ec1d';
-let apiKey;
-let requestToken;
-let username;
-let password;
-let sessionId;
-let listId = '7101979';
+var apiKey: string = 'd26d89578193998f4d00ff8205063534';
+let requestToken: string = 'https://api.themoviedb.org/3/movie/550?api_key=d26d89578193998f4d00ff8205063534'; 
+let username: string;
+let password: string;
+let sessionId:any;
+let listId: string = '7101979';
 
 let loginButton = document.getElementById('login-button');
 let searchButton = document.getElementById('search-button');
@@ -21,17 +20,22 @@ searchButton?.addEventListener('click', async () => {
   if (lista) {
     lista.outerHTML = "";
   }
-  let query = document.getElementById('search').value;
+  // let query = document.getElementById('search').value;
+  
+  let inputQuery = document.getElementById('search') as HTMLInputElement 
+  let query = inputQuery.value
+  
+
   let listaDeFilmes = await procurarFilme(query);
   let ul = document.createElement('ul');
   ul.id = "lista"
-  for (const item of listaDeFilmes.results) {
+  for (const item of listaDeFilmes.results)  {
     let li = document.createElement('li');
     li.appendChild(document.createTextNode(item.original_title))
     ul.appendChild(li)
   }
   console.log(listaDeFilmes);
-  searchContainer.appendChild(ul);
+  searchContainer?.appendChild(ul);
 })
 
 function preencherSenha() {
@@ -89,17 +93,26 @@ class HttpClient {
   }
 }
 
-async function procurarFilme(query) {
+interface title {
+  original_title: string
+}
+
+interface procurarFilmesType {
+  results: title[]
+
+}
+
+async function procurarFilme(query: string) : Promise<procurarFilmesType> {
   query = encodeURI(query)
   console.log(query)
   let result = await HttpClient.get({
     url: `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${query}`,
     method: "GET"
-  })
-  return result
+  }) as procurarFilmesType
+  return result 
 }
 
-async function adicionarFilme(filmeId) {
+async function adicionarFilme(filmeId: number) {
   let result = await HttpClient.get({
     url: `https://api.themoviedb.org/3/movie/${filmeId}?api_key=${apiKey}&language=en-US`,
     method: "GET"
